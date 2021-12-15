@@ -15,10 +15,30 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo-server
       ME_CONFIG_MONGODB_PORT: 27017
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo-server:27017
-
+  produit:
+    image: node
+    ports:
+      - "3000:3000"
+    working_dir: /usr/app
+    command: sh -c "npm install && npm start"
+    volumes:
+      - ./produit/:/usr/app
+    depends_on:
+      - mongo-express
+  panier:
+    image: node
+    ports:
+      - "3001:3000"
+    working_dir: /usr/app
+    command: sh -c "npm install && npm start"
+    volumes:
+      - ./panier/:/usr/app
+    depends_on:
+      - mongo-express
   gateway:
     build: ./gateway
     ports:
       - "8080:8080"
     links:
       - mongo-server
+
