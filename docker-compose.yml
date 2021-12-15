@@ -1,31 +1,22 @@
 version: '3'
 
 services:
-  mongodb-database:
+  mongo-server:
     image: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+    container_name: "mongo-server"
     ports:
       - 27017:27017
-
   mongo-express:
     image: mongo-express
     restart: always
     ports:
       - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb-database:27017/
+    links:
+      - mongo-server
 
-  gateway4:
+  gateway:
     build: ./gateway
     ports:
       - "8080:8080"
-    environment:
-      SPRING_APPLICATION_JSON: '{
-                      "spring.data.mongodb.host"  : "mongodb-database",
-                      "spring.data.mongodb.port" : "27017",
-                      "spring.data.mongodb.database" : "myShop"
-                    }'
+    links:
+      - mongo-server
