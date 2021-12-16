@@ -36,10 +36,10 @@ public class PanierController {
         }
     }
 
-    @PostMapping("/add/{idPanier}/{idUser}")
-    public ResponseEntity<Panier> addToPanier(@PathVariable String idPanier, @PathVariable Integer idUser, @RequestBody Produit produit) throws Exception {
+    @PostMapping("/add/{idPanier}/{idUser}/{idProduit}")
+    public ResponseEntity<Panier> addToPanier(@PathVariable String idPanier, @PathVariable Integer idUser, @PathVariable String idProduit) throws Exception {
         Optional<Panier> panier = panierService.getPanier(idPanier);
-        Produit produitdb = produitService.getProduit(produit.getId());
+        Produit produitdb = produitService.getProduit(idProduit);
         if (panier.isPresent() && produitdb != null ) {
             Panier panierdb = panier.get();
             panierdb.getProductList().add(produitdb);
@@ -59,8 +59,9 @@ public class PanierController {
             }else {
                 Panier panierToCreate = new Panier();
                 panierToCreate.setIdUser(idUser);
+                panierToCreate.setId(idPanier);
                 panierToCreate.getProductList().add(produitdb);
-                panierToCreate.setPrice(produit.getPrice());
+                panierToCreate.setPrice(produitdb.getPrice());
                 Panier panierDb = panierService.savePanier(panierToCreate);
                 produitdb.setStock(produitdb.getStock()-1);
                 produitService.saveProduit(produitdb);
